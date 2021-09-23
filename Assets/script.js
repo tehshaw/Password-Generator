@@ -17,7 +17,7 @@ generateBtn.addEventListener("click", writePassword);
 //my code below
 function generatePassword(){
 
-  // Array to store input from user prompts for reference.
+  // Array to store input from all the prompts for reference.
   var promptAnswers = [];     
 
 
@@ -32,25 +32,29 @@ function generatePassword(){
   var specialCharaters = [  '@',  '%',  '+',  '\\',  '/',  "'",  '!',  '#',  '$',  '^',  '?',  ':',  ',',  ')',
     '(',  '}',  '{',  ']',  '[',  '~',  '-',  '_',  '.'];
 
-  //all all chars to array in their arrays (matrix) to be stored for later use
+  //array to hold all chars able to be used in their original array (see above) for furtre use.
+  //place "Start" in index 0 to line up the char arrays with the questions array.
+  //question 1 (index 0) asks for the len of the password, this does not line up with a char set
+  //starting with question 2 (index 1) will match up with the char array stored here
+  //so index 1 in the allChars array will match the question in prompText index 1 (lowercase char option) 
   var allChars = ["Start"];
   allChars.push(lowerCasedCharacters, upperCasedCharacters, numericCharacters, specialCharaters);
 
+
   //store all prompts in arary to easily access or change, will be called from the array when the prompt/confirm is called
-  var promptText =["Please enter a password length:", "Do you want lowercase letters?", "Do you want uppercase letters?",
+  var promptText =["Please enter a password length: \n(Length must be between 8 and 128)", "Do you want lowercase letters?", "Do you want uppercase letters?",
   "Do you want numbers?", "Do you want special characters?" ];
 
-  //allChars and promptText are linked in the order they are listed. if the order in one changes, the other in the other should
-  //change to match, for example, if prompt is remv or if an option is added.
 
   //will hold chars that will be used to generate the password based on the user selections
+  //as the user confirms what char sets they want to use to generate the password they are added here
   var validChars = [];
 
-  var keepGoing = false;
-  var question = 0;
-  var answer;
+  var keepGoing = false; //conditon tracker for the do-while looop
+  var question = 0; //tracks what question is being asked in the prompts, question 0 is index 0 of the promptText array
+  var answer; //used to store prompts from the console
 
-  var password = "";
+  var password = ""; //be used to generate and return password
 
   do {   
 
@@ -62,11 +66,11 @@ function generatePassword(){
       if(!isNaN(answer) && answer >= 8 && answer <= 128){
         promptAnswers[question] = Math.trunc(answer); //will remove and point of presicion from answer as 'isNaN' will show a decimal as true.
         keepGoing = true; //conf selection is good and validate the loop check indicator
-        question++;
+        question++; //iterate to next question in array promptText
       }
-      else{ //if the prompt is no valid ensure loop validator is false to break loop.
-        keepGoing = false;
-        alert("Please enter a valid length");
+      else{ //if the prompt return is not a valid length, return null string to end function
+        alert("Not a valid password length.\nPlease try again.");
+        return "";
       }
     }
     else{
@@ -80,7 +84,7 @@ function generatePassword(){
       else{
         promptAnswers[question] = answer; 
       } 
-      question++;
+      question++; //regardless of the choice interate to the next question to be asked
     }
 
     //ensures break from loop once all questions have been answered
@@ -90,6 +94,14 @@ function generatePassword(){
     
     
   } while (keepGoing);
+
+
+  //verify that at least one char set was elected to build the password, if not will exit and return a null string so text in the generate box does not change
+  if(validChars.length == 0)
+  {
+    alert("No character sets were elected to create the password.\nPlease try again.")
+    return "";
+  }
 
   //based on user selected password length, define max limit for use in random number
   //must be the length minus one because this will be the upper bounds of the array and to avoid an out of bounds error
